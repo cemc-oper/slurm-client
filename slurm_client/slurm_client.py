@@ -4,9 +4,8 @@ import subprocess
 import yaml
 import click
 
-from nwpc_hpc_model.loadleveler import QueryCategory, QueryCategoryList, QueryModel
-from nwpc_hpc_model.loadleveler import record_parser
-from nwpc_hpc_model.loadleveler import value_saver
+from nwpc_hpc_model.workload.slurm import SlurmQueryCategoryList, SlurmQueryModel
+from nwpc_hpc_model.workload import QueryCategory, value_saver, record_parser
 from nwpc_hpc_model.loadleveler.filter_condition import get_property_data
 
 
@@ -38,12 +37,12 @@ def get_user_name() -> str:
 
 
 def build_category_list(category_list_config):
-    category_list = QueryCategoryList()
+    category_list = SlurmQueryCategoryList()
     for an_item in category_list_config:
         category = QueryCategory(
             category_id=an_item['id'],
             display_name=an_item['display_name'],
-            label=an_item['display_name'],
+            label=an_item['label'],
             record_parser_class=getattr(record_parser, an_item['record_parser_class']),
             record_parser_arguments=tuple(an_item['record_parser_arguments']),
             value_saver_class=getattr(value_saver, an_item['value_saver_class']),
@@ -56,43 +55,26 @@ def build_category_list(category_list_config):
 # TODO: move to nwpc hpc model, and do it in a more proper way.
 def get_sort_data(job_item, property_id):
     data = get_property_data(job_item, property_id)
-    if property_id == 'llq.status':
-        status = data
-        if status == 'R':
-            return 0
-        elif status == 'C':
-            return 10
-        elif status == 'I':
-            return 100
-        elif status == 'RP':
-            return 200
-        elif status == 'H':
-            return 300
-        else:
-            return 500
-    else:
-        return data
+    return data
 
 
 def generate_sort_key_function(sort_keys):
     def sort_key_function(item):
         key_list = []
         for sort_key in sort_keys:
-            key_list.append(get_sort_data(item, "llq."+sort_key))
+            key_list.append(get_sort_data(item, "squeue."+sort_key))
         return tuple(key_list)
     return sort_key_function
 
 
 def sort_query_response_items(items, sort_keys=None):
     if sort_keys is None:
-        sort_keys = ('status', 'queue_date')
+        sort_keys = ('state', 'submit_time')
     items.sort(key=generate_sort_key_function(sort_keys))
 
 
-def run_llq_detail_command(command="/usr/bin/llq -l", params="-u nwp") -> str:
+def run_squeue_command(command="squeue -o %all", params="") -> str:
     """
-    run llq detail command, default is llq -l.
-
     :param command:
     :param params:
     :return: command result string
@@ -103,9 +85,9 @@ def run_llq_detail_command(command="/usr/bin/llq -l", params="-u nwp") -> str:
     return output_string
 
 
-def get_llq_detail_query_model(config, params=""):
+def get_squeue_query_model(config, params=""):
     """
-    get response of llq detail query.
+    get response of squeue query.
 
     :param config: config dict
         {
@@ -122,17 +104,17 @@ def get_llq_detail_query_model(config, params=""):
                     }
                 ]
     :param params:
-    :return: model, see nwpc_hpc_model_loadleveler.query_model.QueryModel
+    :return: model, see nwpc_hpc_model.workflow.query_model.QueryModel
 
     """
-    output_lines = run_llq_detail_command(params=params).split("\n")
+    output_lines = run_squeue_command(params=params).split("\n")
     category_list = build_category_list(config['category_list'])
 
-    model = QueryModel.build_from_category_list(output_lines, category_list)
+    model = SlurmQueryModel.build_from_table_category_list(output_lines, category_list, '|')
     return model
 
 
-def get_llq_detail_query_response(config, params=""):
+def get_squeue_query_response(config, params=""):
     """
     get response of llq detail query.
 
@@ -141,23 +123,23 @@ def get_llq_detail_query_response(config, params=""):
             category_list: a list of categories
                 [
                     {
-                        id: "llq.id",
-                        display_name: "Id",
-                        label: "Job Step Id",
-                        record_parser_class: "DetailLabelParser",
-                        record_parser_arguments: ["Job Step Id"],
+                        id: "squeue.job_id",
+                        display_name: "Job ID",
+                        label: "JOBID",
+                        record_parser_class: "TokenRecordParser",
+                        record_parser_arguments: [-1, "|"],
                         value_saver_class: "StringSaver",
                         value_saver_arguments: []
                     }
                 ]
     :param params:
-    :return: model dict, see nwpc_hpc_model_loadleveler.query_model.QueryModel.to_dict()
+    :return: model dict, see nwpc_hpc_model.workflow.query_model.QueryModel.to_dict()
         {
-            items: job info items, see nwpc_hpc_model_loadleveler.query_item.QueryItem.to_dict()
+            items: job info items, see nwpc_hpc_model.workflow.query_item.QueryItem.to_dict()
         }
 
     """
-    return get_llq_detail_query_model(config, params).to_dict()
+    return get_squeue_query_model(config, params).to_dict()
 
 
 @click.group()
@@ -170,11 +152,11 @@ def cli():
 @cli.command('query', short_help='llq short format')
 @click.option('--config-file', help="config file path")
 @click.option('-u', '--user-list', multiple=True, help="user list")
-@click.option('-c', '--class-list', multiple=True, help="class list")
+@click.option('-p', '--partition-list', multiple=True, help="partition list")
 @click.option('-s', '--sort-keys', help="sort keys, split by :, such as status:query_date")
 @click.option('-p', '--params', default="", help="llq params")
 @click.option('-j', '--job-script-pattern', help="job script pattern")
-def query(config_file, user_list, class_list, sort_keys, params, job_script_pattern):
+def query(config_file, user_list, partition_list, sort_keys, params, job_script_pattern):
     """
     Query jobs in LoadLeveler and show in a simple format.
     """
@@ -184,59 +166,59 @@ def query(config_file, user_list, class_list, sort_keys, params, job_script_patt
         params = ''
     if user_list:
         params += ' -u {user_list}'.format(user_list=" ".join(user_list))
-    if class_list:
-        params += ' -c {class_list}'.format(class_list=" ".join(class_list))
+    if partition_list:
+        params += ' -p {partition_list}'.format(partition_list=" ".join(partition_list))
     if sort_keys:
         sort_keys = tuple(sort_keys.split(":"))
 
-    model_dict = get_llq_detail_query_response(config, params)
+    model_dict = get_squeue_query_response(config, params)
 
     max_class_length = 0
     max_owner_length = 0
     for an_item in model_dict['items']:
-        job_class = get_property_data(an_item, "llq.class")
-        if len(job_class) > max_class_length:
-            max_class_length = len(job_class)
-        job_owner = get_property_data(an_item, "llq.owner")
-        if len(job_owner) > max_owner_length:
-            max_owner_length = len(job_owner)
+        job_partition = get_property_data(an_item, "squeue.partition")
+        if len(job_partition) > max_class_length:
+            max_class_length = len(job_partition)
+        job_account = get_property_data(an_item, "squeue.account")
+        if len(job_account) > max_owner_length:
+            max_owner_length = len(job_account)
 
     items = model_dict['items']
 
-    if job_script_pattern:
-        from loadleveler_client.plugins.filters import job_script_filter
-        a_filter_object = job_script_filter.create_filter(job_script_pattern)
-        a_filter = a_filter_object['filter']
-        items = a_filter.filter(items)
+    # if job_script_pattern:
+    #     from loadleveler_client.plugins.filters import job_script_filter
+    #     a_filter_object = job_script_filter.create_filter(job_script_pattern)
+    #     a_filter = a_filter_object['filter']
+    #     items = a_filter.filter(items)
 
     sort_query_response_items(items, sort_keys)
 
     for an_item in items:
-        job_id = get_property_data(an_item, "llq.id")
-        job_class = get_property_data(an_item, "llq.class")
-        job_owner = get_property_data(an_item, "llq.owner")
-        job_script = get_property_data(an_item, "llq.job_script")
-        job_status = get_property_data(an_item, "llq.status")
-        job_queue_data = get_property_data(an_item, "llq.queue_date")
-        click.echo("{job_id} {job_status} {job_class} {job_owner} {job_queue_data} {job_script}".format(
+        job_id = get_property_data(an_item, "squeue.job_id")
+        job_partition = get_property_data(an_item, "squeue.partition")
+        job_account = get_property_data(an_item, "squeue.account")
+        job_command = get_property_data(an_item, "squeue.command")
+        job_state = get_property_data(an_item, "squeue.state")
+        job_submit_time = get_property_data(an_item, "squeue.submit_time")
+        click.echo("{job_id} {job_state} {job_partition} {job_account} {job_submit_time} {job_command}".format(
             job_id=click.style(job_id, bold=True),
-            job_class=click.style(("{job_class: <" + str(max_class_length) + "}").format(job_class=job_class), fg='blue'),
-            job_owner=click.style(("{job_owner: <" + str(max_owner_length) + "}").format(job_owner=job_owner), fg='cyan'),
-            job_queue_data=click.style(job_queue_data.strftime("%m/%d %H:%M"), fg='blue'),
-            job_script=job_script,
-            job_status=click.style("{job_status: <2}".format(job_status=job_status), fg='yellow'),
+            job_partition=click.style(("{job_partition: <" + str(max_class_length) + "}").format(job_partition=job_partition), fg='blue'),
+            job_account=click.style(("{job_account: <" + str(max_owner_length) + "}").format(job_account=job_account), fg='cyan'),
+            job_submit_time=click.style(job_submit_time.strftime("%m/%d %H:%M"), fg='blue'),
+            job_command=job_command,
+            job_state=click.style("{job_state: <2}".format(job_state=job_state), fg='yellow'),
         ))
 
 
 @cli.command('detail', short_help='llq detail format')
 @click.option('--config-file', help="config file path")
 @click.option('-u', '--user-list', multiple=True, help="user list")
-@click.option('-c', '--class-list', multiple=True, help="class list")
+@click.option('-p', '--partition-list', multiple=True, help="partition list")
 @click.option('-s', '--sort-keys', help="sort keys, split by :, such as status:query_date")
 @click.option('-p', '--params', default="", help="llq params")
-def show_detail(config_file, user_list, class_list, sort_keys, params):
+def show_detail(config_file, user_list, partition_list, sort_keys, params):
     """
-    Query jobs in LoadLeveler and show in a detailed format.
+    Query jobs in Slurm and show in a detailed format.
     """
     config = get_config(config_file)
 
@@ -244,12 +226,12 @@ def show_detail(config_file, user_list, class_list, sort_keys, params):
         params = ''
     if user_list:
         params += ' -u {user_list}'.format(user_list=" ".join(user_list))
-    if class_list:
-        params += ' -c {class_list}'.format(class_list=" ".join(class_list))
+    if partition_list:
+        params += ' -c {partition_list}'.format(partition_list=" ".join(partition_list))
     if sort_keys:
         sort_keys = tuple(sort_keys.split(":"))
 
-    model_dict = get_llq_detail_query_response(config, params)
+    model_dict = get_squeue_query_response(config, params)
     items = model_dict['items']
     sort_query_response_items(items, sort_keys)
 
@@ -279,7 +261,7 @@ def show_detail(config_file, user_list, class_list, sort_keys, params):
 
 
 def query_user_llq(config, user_name, sort_keys, long=False):
-    model_dict = get_llq_detail_query_response(config)
+    model_dict = get_squeue_query_response(config)
 
     max_class_length = 0
     max_owner_length = 0
@@ -365,88 +347,6 @@ def llqu(config_file, user_name, long, sort_keys):
     query_user_llq(config, user_name, sort_keys, long)
 
 
-@cli.command('vijob', short_help='edit job script')
-@click.option('--config-file', help="config file path")
-@click.option('-f', '--file-type', type=click.Choice(['job', 'out', 'err']), help="file type")
-@click.argument('job_id')
-def vijob(config_file, file_type, job_id):
-    """
-    Edit job script.
-    """
-    config = get_config(config_file)
-
-    params = job_id
-    model_dict = get_llq_detail_query_response(config, params)
-
-    job_count = len(model_dict['items'])
-
-    if job_count == 0:
-        click.echo('There is no job.')
-    elif job_count > 1:
-        click.echo('There are more than one job.')
-    else:
-        an_item = model_dict['items'][0]
-        key = "llq.job_script"
-        if file_type == 'out':
-            key = 'llq.out'
-        elif file_type == 'err':
-            key = 'llq.err'
-        file_path = get_property_data(an_item, key)
-        click.edit(filename=file_path)
-
-
-@cli.command('viout', short_help='edit output file')
-@click.option('--config-file', help="config file path")
-@click.argument('job_id')
-def viout(config_file, job_id):
-    """
-    Edit output file.
-    """
-    config = get_config(config_file)
-
-    params = job_id
-    model_dict = get_llq_detail_query_response(config, params)
-
-    job_count = len(model_dict['items'])
-
-    if job_count == 0:
-        click.echo('There is no job.')
-    elif job_count > 1:
-        click.echo('There are more than one job.')
-    else:
-        an_item = model_dict['items'][0]
-        # job_script = get_property_data(an_item, "llq.job_script")
-        # job_err = get_property_data(an_item, "llq.err")
-        job_out = get_property_data(an_item, "llq.out")
-        click.edit(filename=job_out)
-
-
-@cli.command('vierr', short_help='edit error output file')
-@click.option('--config-file', help="config file path")
-@click.argument('job_id')
-def vierr(config_file, job_id):
-    """
-    Edit error output file.
-    """
-    config = get_config(config_file)
-
-    params = job_id
-    model_dict = get_llq_detail_query_response(config, params)
-
-    job_count = len(model_dict['items'])
-
-    if job_count == 0:
-        click.echo('There is no job.')
-    elif job_count > 1:
-        click.echo('There are more than one job.')
-    else:
-        an_item = model_dict['items'][0]
-        # job_script = get_property_data(an_item, "llq.job_script")
-        job_err = get_property_data(an_item, "llq.err")
-        # job_out = get_property_data(an_item, "llq.out")
-        click.edit(filename=job_err)
-
-
 @cli.command('category', short_help="show category list defined in config file.")
 @click.option('-d', '--detail', is_flag=True, default=False, help="show detail information")
 @click.option('--config-file', help="config file path")
@@ -473,80 +373,6 @@ def show_category(detail, config_file):
             for an_arg in a_category['value_saver_arguments']:
                 click.echo("    {arg}".format(arg=an_arg))
             click.echo()
-
-
-@cli.command('filter', short_help="apply filter for loadleveler")
-@click.option('-f', '--filter', 'filter_name', help="filter name")
-@click.option('-d', '--detail', is_flag=True, default=False, help="show detail information")
-@click.option('--config-file', help="config file path")
-def apply_filter(filter_name, detail, config_file):
-
-    """
-    apply filter for loadleveler.
-    """
-    config = get_config(config_file)
-
-    params = ''
-    sort_keys = None
-
-    query_model = get_llq_detail_query_response(config, params)
-
-    from loadleveler_client.plugins.filters import long_time_operation_job_filter, nwp_pd_long_time_upload_job_filter
-
-    filter_module_list = [
-        long_time_operation_job_filter,
-        nwp_pd_long_time_upload_job_filter
-    ]
-
-    def apply_filters(job_items):
-        results = []
-        for a_filter_module in filter_module_list:
-            a_filter_object = a_filter_module.create_filter()
-            cur_filter_name = a_filter_object['name']
-            a_filter = a_filter_object['filter']
-            target_job_items = a_filter.filter(job_items)
-            results.append({
-                'name': cur_filter_name,
-                'target_job_items': target_job_items
-            })
-        return results
-
-    filter_results = apply_filters(query_model['items'])
-
-    for a_filter_result in filter_results:
-        click.echo('{filter_name}:'.format(filter_name=click.style(a_filter_result['name'], bold=True)))
-
-        max_class_length = 0
-        max_owner_length = 0
-        for an_item in a_filter_result['target_job_items']:
-            job_class = get_property_data(an_item, "llq.class")
-            if len(job_class) > max_class_length:
-                max_class_length = len(job_class)
-            job_owner = get_property_data(an_item, "llq.owner")
-            if len(job_owner) > max_owner_length:
-                max_owner_length = len(job_owner)
-
-        items = a_filter_result['target_job_items']
-        sort_query_response_items(items, sort_keys)
-
-        for an_item in items:
-            job_id = get_property_data(an_item, "llq.id")
-            job_class = get_property_data(an_item, "llq.class")
-            job_owner = get_property_data(an_item, "llq.owner")
-            job_script = get_property_data(an_item, "llq.job_script")
-            job_status = get_property_data(an_item, "llq.status")
-            job_queue_data = get_property_data(an_item, "llq.queue_date")
-            click.echo("{job_id} {job_status} {job_class} {job_owner} {job_queue_data} {job_script}".format(
-                job_id=click.style(job_id, bold=True),
-                job_class=click.style(("{job_class: <" + str(max_class_length) + "}").format(job_class=job_class),
-                                      fg='blue'),
-                job_owner=click.style(("{job_owner: <" + str(max_owner_length) + "}").format(job_owner=job_owner),
-                                      fg='cyan'),
-                job_queue_data=click.style(job_queue_data.strftime("%m/%d %H:%M"), fg='blue'),
-                job_script=job_script,
-                job_status=click.style("{job_status: <2}".format(job_status=job_status), fg='yellow'),
-            ))
-        click.echo()
 
 
 if __name__ == "__main__":

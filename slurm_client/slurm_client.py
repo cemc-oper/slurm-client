@@ -6,7 +6,7 @@ import click
 
 from nwpc_hpc_model.workload.slurm import SlurmQueryCategoryList, SlurmQueryModel
 from nwpc_hpc_model.workload import QueryCategory, value_saver, record_parser
-from nwpc_hpc_model.workload.query_item import get_property_data
+from nwpc_hpc_model.base.query_item import get_property_data
 
 
 config_file_name = "slurm.config.yml"

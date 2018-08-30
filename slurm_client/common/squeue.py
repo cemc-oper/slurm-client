@@ -1,7 +1,7 @@
 # coding: utf-8
 import subprocess
 
-from .model_util import generate_sort_key_function, get_sort_data, build_category_list
+from .model_util import build_category_list, sort_items
 from nwpc_hpc_model.workload.slurm import SlurmQueryModel
 
 
@@ -9,7 +9,7 @@ def sort_query_response_items(items, sort_keys=None):
     if sort_keys is None:
         sort_keys = ('state', 'submit_time')
     sort_keys = ['squeue.'+i for i in sort_keys]
-    items.sort(key=generate_sort_key_function(sort_keys))
+    sort_items(items, sort_keys)
 
 
 def run_squeue_command(command="squeue -o %all", params="") -> str:

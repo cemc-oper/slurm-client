@@ -20,6 +20,12 @@ def generate_sort_key_function(sort_keys):
     return sort_key_function
 
 
+def sort_items(items, sort_keys=None):
+    if sort_keys is None:
+        return
+    items.sort(key=generate_sort_key_function(sort_keys))
+
+
 def build_category_list(category_list_config):
     category_list = SlurmQueryCategoryList()
     for an_item in category_list_config:

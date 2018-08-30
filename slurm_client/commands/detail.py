@@ -1,7 +1,9 @@
 # coding: utf-8
 import click
 
-from slurm_client.common import get_config, get_property_data, sort_query_response_items, get_squeue_query_response
+from slurm_client.common.config import get_config
+from slurm_client.common.model_util import get_property_data
+from slurm_client.common.squeue import sort_query_response_items, get_squeue_query_response
 
 
 @click.command('detail', short_help='squeue detail format')

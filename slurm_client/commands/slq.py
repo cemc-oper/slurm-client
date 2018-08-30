@@ -1,9 +1,10 @@
 # coding: utf-8
 import click
 
-from slurm_client.common import get_config, get_property_data, \
-    sort_query_response_items, get_squeue_query_response, \
-    get_user_name
+from slurm_client.common import get_user_name
+from slurm_client.common.config import get_config
+from slurm_client.common.model_util import get_property_data
+from slurm_client.common.squeue import sort_query_response_items, get_squeue_query_response
 
 
 def query_user_slq(config, user_name, sort_keys, long=False):

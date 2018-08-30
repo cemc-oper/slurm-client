@@ -106,7 +106,7 @@ def get_squeue_query_model(config, params=""):
 
     """
     output_lines = run_squeue_command(params=params).split("\n")
-    category_list = build_category_list(config['category_list'])
+    category_list = build_category_list(config['squeue']['category_list'])
 
     model = SlurmQueryModel.build_from_table_category_list(output_lines, category_list, '|')
     return model

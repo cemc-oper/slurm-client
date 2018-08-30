@@ -13,7 +13,7 @@ def command(detail, config_file):
     show category list defined in config file.
     """
     config = get_config(config_file)
-    category_list = config['category_list']
+    category_list = config['squeue']['category_list']
     for a_category in category_list:
         click.echo(click.style(a_category['id'], bold=True))
         if detail:

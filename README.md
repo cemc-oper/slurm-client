@@ -41,25 +41,26 @@ slurm_client query --config-file=some/config/path
 `slurm-client` use a YAML file to set catogries which are extract from Slurm `squeue` command. Such as
 
 ```yaml
-category_list:
-  -
-    id: "squeue.job_id"
-    display_name: "Job Id"
-    label: "JOBID"
-    record_parser_class: "TokenRecordParser"
-    record_parser_arguments:
-      - -1
-      - "|"
-    value_saver_class: "StringSaver"
-    value_saver_arguments: []
-  -
-    id: "squeue.account"
-    display_name: "Account"
-    label: "ACCOUNT"
-    record_parser_class: "TokenRecordParser"
-    record_parser_arguments:
-      - -1
-      - "|"
-    value_saver_class: "StringSaver"
-    value_saver_arguments: []
+squeue:
+  category_list:
+    -
+      id: "squeue.job_id"
+      display_name: "Job Id"
+      label: "JOBID"
+      record_parser_class: "TokenRecordParser"
+      record_parser_arguments:
+        - -1
+        - "|"
+      value_saver_class: "StringSaver"
+      value_saver_arguments: []
+    -
+      id: "squeue.account"
+      display_name: "Account"
+      label: "ACCOUNT"
+      record_parser_class: "TokenRecordParser"
+      record_parser_arguments:
+        - -1
+        - "|"
+      value_saver_class: "StringSaver"
+      value_saver_arguments: []
 ```

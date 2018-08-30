@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 setup(
     name='slurm-client',
 
-    version='0.1.0',
+    version='0.2.0',
 
     description='Slurm Client',
     long_description=long_description,

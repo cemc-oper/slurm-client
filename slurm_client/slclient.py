@@ -1,11 +1,7 @@
 # coding=utf-8
 import click
 
-from .commands import query
-from .commands import detail
-from .commands import slq
-from .commands import category
-from .commands import info
+from slurm_client.commands import query, detail, slq, category, info, acct
 
 
 @click.group()
@@ -21,6 +17,7 @@ cli.add_command(slq.slqn)
 cli.add_command(slq.slqu)
 cli.add_command(info.command)
 cli.add_command(category.command)
+cli.add_command(acct.command)
 
 
 if __name__ == "__main__":

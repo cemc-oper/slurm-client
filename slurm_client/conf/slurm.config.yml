@@ -113,3 +113,89 @@ sinfo:
         - -1
       value_saver_class: StringSaver
       value_saver_arguments: []
+
+sacct:
+  command: 'sacct -X -P -o "ALL"'
+  category_list:
+    -
+      id: "sacct.job_id"
+      display_name: "Job ID"
+      label: "JobID"
+      record_parser_class: TokenRecordParser
+      record_parser_arguments:
+        - -1
+        - '|'
+      value_saver_class: StringSaver
+      value_saver_arguments: []
+    -
+      id: "sacct.job_name"
+      display_name: "Job Name"
+      label: "JobName"
+      record_parser_class: TokenRecordParser
+      record_parser_arguments:
+        - -1
+        - '|'
+      value_saver_class: StringSaver
+      value_saver_arguments: []
+    -
+      id: "sacct.partition"
+      display_name: "Partition"
+      label: "Partition"
+      record_parser_class: TokenRecordParser
+      record_parser_arguments:
+        - -1
+        - '|'
+      value_saver_class: StringSaver
+      value_saver_arguments: []
+    -
+      id: "sacct.account"
+      display_name: "Account"
+      label: "Account"
+      record_parser_class: TokenRecordParser
+      record_parser_arguments:
+        - -1
+        - '|'
+      value_saver_class: StringSaver
+      value_saver_arguments: []
+    -
+      id: "sacct.alloc_cpus"
+      display_name: "Alloc CPUs"
+      label: "AllocCPUS"
+      record_parser_class: TokenRecordParser
+      record_parser_arguments:
+        - -1
+        - '|'
+      value_saver_class: NumberSaver
+      value_saver_arguments: []
+    -
+      id: "sacct.alloc_nodes"
+      display_name: "Alloc Nodes"
+      label: "AllocNodes"
+      record_parser_class: TokenRecordParser
+      record_parser_arguments:
+        - -1
+        - '|'
+      value_saver_class: NumberSaver
+      value_saver_arguments: []
+    -
+      id: "sacct.state"
+      display_name: "State"
+      label: "State"
+      record_parser_class: TokenRecordParser
+      record_parser_arguments:
+        - -1
+        - '|'
+      value_saver_class: StringSaver
+      value_saver_arguments: []
+    -
+      id: "sacct.exit_code"
+      display_name: "Exit Code"
+      label: "ExitCode"
+      record_parser_class: TokenRecordParser
+      record_parser_arguments:
+        - -1
+        - '|'
+      value_saver_class: StringSaver
+      value_saver_arguments: []
+
+

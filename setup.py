@@ -49,7 +49,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'slclient=slurm_client.slurm_client:cli'
+            'slclient=slurm_client.slclient:cli'
         ]
     }
 )

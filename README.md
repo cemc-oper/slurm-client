@@ -2,6 +2,11 @@
 
 A cli client for Slurm in NWPC.
 
+## Features
+
+- Query active jobs.
+- Show partition information.
+
 ## Installing
 
 Install `nwpc-hpc-model` package. You can download this package from Github or
@@ -30,12 +35,6 @@ $slclient query
 ```
 
 
-Default config file is installed. To use a different config, use `--config-file` parameter.
-
-```bash
-slurm_client query --config-file=some/config/path
-```
-
 ## Config
 
 `slurm-client` use a YAML file to set catogries which are extract from Slurm `squeue` command. Such as
@@ -63,4 +62,10 @@ squeue:
         - "|"
       value_saver_class: "StringSaver"
       value_saver_arguments: []
+```
+
+Default config file is installed. To use a different config, use `--config-file` parameter.
+
+```bash
+slurm_client query --config-file=some/config/path
 ```

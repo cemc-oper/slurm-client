@@ -5,6 +5,7 @@ from .commands import query
 from .commands import detail
 from .commands import slq
 from .commands import category
+from .commands import info
 
 
 @click.group()
@@ -18,6 +19,7 @@ cli.add_command(query.command)
 cli.add_command(detail.command)
 cli.add_command(slq.slqn)
 cli.add_command(slq.slqu)
+cli.add_command(info.command)
 cli.add_command(category.command)
 
 

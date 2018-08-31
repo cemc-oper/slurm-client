@@ -1,0 +1,6 @@
+PARTITION            AVAIL       NODES(A/I/O/T)                  CPUS(A/I/O/T)
+serial                  up            1/23/0/24                    9/759/0/768
+serial_op               up            1/23/0/24                    9/759/0/768
+largemem                up         145/83/2/230              4640/2656/64/7360
+normal                  up      275/1225/4/1504           8800/39200/128/48128
+operation               up      275/1225/4/1504           8800/39200/128/48128

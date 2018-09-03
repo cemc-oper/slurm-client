@@ -32,50 +32,162 @@ def command(config_file, sort_keys, params):
             'title': 'Job ID',
             'id': 'sacct.job_id',
             'col_length': 10,
-            'title_align': '>',
-            'value_align': '<'
+            'style': {
+                'title': {
+                    'align': '>',
+                    'echo_param': {
+                        'bold': True
+                    }
+                },
+                'value': {
+                    'align': '>',
+                    'echo_param': {
+                        'bold': True
+                    }
+                }
+            }
         },
         {
             'title': 'Partition',
             'id': 'sacct.partition',
             'col_length': 10,
-            'title_align': '>',
-            'value_align': '<'
+            'style': {
+                'title': {
+                    'align': '>',
+                    'echo_param': {
+                    }
+                },
+                'value': {
+                    'align': '>',
+                    'echo_param': {
+                    }
+                }
+            }
         },
         {
             'title': 'Account',
             'id': 'sacct.account',
-            'col_length': 6,
-            'title_align': '<',
-            'value_align': '<'
+            'col_length': 7,
+            'style': {
+                'title': {
+                    'align': '>',
+                    'echo_param': {
+                    }
+                },
+                'value': {
+                    'align': '>',
+                    'echo_param': {
+                    }
+                }
+            }
         },
         {
             'title': 'Nodes',
             'id': 'sacct.alloc_nodes',
             'col_length': 8,
-            'title_align': '<',
-            'value_align': '<'
+            'style': {
+                'title': {
+                    'align': '>',
+                    'echo_param': {
+                    }
+                },
+                'value': {
+                    'align': '>',
+                    'echo_param': {
+                    }
+                }
+            }
         },
         {
             'title': 'CPUs',
             'id': 'sacct.alloc_cpus',
             'col_length': 8,
-            'title_align': '<',
-            'value_align': '<'
+            'style': {
+                'title': {
+                    'align': '>',
+                    'echo_param': {
+                    }
+                },
+                'value': {
+                    'align': '>',
+                    'echo_param': {
+                    }
+                }
+            }
         },
         {
             'title': 'State',
             'id': 'sacct.state',
             'col_length': 8,
-            'title_align': '<',
-            'value_align': '<'
+            'style': {
+                'title': {
+                    'align': '>',
+                    'echo_param': {
+                        'fg': 'yellow'
+                    }
+                },
+                'value': {
+                    'align': '>',
+                    'echo_param': {
+                        'fg': 'yellow'
+                    }
+                }
+            }
         },
         {
             'title': 'Exit Code',
             'id': 'sacct.exit_code',
-            'col_length': 8,
-            'title_align': '<',
-            'value_align': '<'
+            'col_length': 12,
+            'style': {
+                'title': {
+                    'align': '>',
+                    'echo_param': {
+                    }
+                },
+                'value': {
+                    'align': '>',
+                    'echo_param': {
+                    }
+                }
+            }
+        },
+        {
+            'title': 'Eligible',
+            'id': 'sacct.eligible',
+            'col_length': 12,
+            'style': {
+                'title': {
+                    'align': '>',
+                    'echo_param': {
+                        'fg': 'cyan'
+                    }
+                },
+                'value': {
+                    'align': '>',
+                    'echo_param': {
+                        'fg': 'cyan'
+                    }
+                }
+            }
+        },
+        {
+            'title': 'End',
+            'id': 'sacct.end',
+            'col_length': 12,
+            'style': {
+                'title': {
+                    'align': '>',
+                    'echo_param': {
+                        'fg': 'magenta'
+                    }
+                },
+                'value': {
+                    'align': '>',
+                    'echo_param': {
+                        'fg': 'magenta'
+                    }
+                }
+            }
         },
     ]
 
@@ -90,13 +202,14 @@ def command(config_file, sort_keys, params):
             row_data.append(value)
         table_data.append(row_data)
 
+    title_token = []
     if print_header:
-        title_token = []
         for a_column in column_config:
-            col_title = ("{title: " + a_column['title_align'] + str(a_column['col_length']) + "}").format(
+            col_title = ("{title: " + a_column['style']['title']['align'] + str(a_column['col_length']) + "}").format(
                 title=a_column['title']
             )
-            title_token.append(col_title)
+            token_string = click.style(col_title, **a_column['style']['title']['echo_param'])
+            title_token.append(token_string)
 
         click.echo(' '.join(title_token))
 
@@ -104,10 +217,11 @@ def command(config_file, sort_keys, params):
         row_token = []
         index = 0
         for a_column in column_config:
-            col_title = ("{value: " + a_column['value_align'] + str(a_column['col_length']) + "}").format(
+            col_title = ("{value: " + a_column['style']['value']['align'] + str(a_column['col_length']) + "}").format(
                 value=a_row[index]
             )
-            row_token.append(col_title)
+            token_string = click.style(col_title, **a_column['style']['value']['echo_param'])
+            row_token.append(token_string)
             index += 1
 
         click.echo(' '.join(row_token))

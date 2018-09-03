@@ -197,5 +197,26 @@ sacct:
         - '|'
       value_saver_class: StringSaver
       value_saver_arguments: []
+    -
+      id: "sacct.eligible"
+      display_name: "Eligible"
+      label: "Eligible"
+      record_parser_class: TokenRecordParser
+      record_parser_arguments:
+        - -1
+        - '|'
+      value_saver_class: StringSaver
+      value_saver_arguments: []
+    -
+      id: "sacct.end"
+      display_name: "End"
+      label: "End"
+      record_parser_class: TokenRecordParser
+      record_parser_arguments:
+        - -1
+        - '|'
+      value_saver_class: StringSaver
+      value_saver_arguments: []
+
 
 

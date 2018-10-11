@@ -12,7 +12,7 @@ from slurm_client.common.squeue import sort_query_response_items, get_squeue_que
 # @click.option('-d', '--detail', is_flag=True, default=False, help="show detail information")
 def command(config_file):
     """
-    Show accounting data for all jobs.
+    Filter slurm jobs using build-in filters.
     """
     config = get_config(config_file)
 

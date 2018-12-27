@@ -1,9 +1,7 @@
 # coding=utf-8
-from nwpc_hpc_model.loadleveler.filter_condition import \
-    PropertyFilterCondition, \
-    get_property_data
-from nwpc_hpc_model.loadleveler.filter import Filter
-from nwpc_hpc_model.loadleveler.filter_condition import create_greater_value_checker, create_value_in_checker
+from nwpc_hpc_model.workload.filter_condition import PropertyFilterCondition, get_property_data
+from nwpc_hpc_model.workload.filter import Filter
+from nwpc_hpc_model.workload.filter_condition import create_value_in_checker
 
 
 filter_info = {

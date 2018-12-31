@@ -10,12 +10,12 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 setup(
     name='slurm-client',
 
-    version='0.2.0',
+    version='1.0.0',
 
     description='Slurm Client',
     long_description=long_description,
 
-    url='https://github.com/perillaroc/nwpc-operation-system-tool',
+    url='https://github.com/perillaroc/nwpc-nost',
 
     author='perillaroc',
     author_email='perillaroc@gmail.com',
@@ -23,10 +23,11 @@ setup(
     license='GPL-3.0',
 
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.6'
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7'
     ],
 
     keywords='nwpc slurm client',
@@ -34,13 +35,15 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
     include_package_data=True,
+
     package_data={
         'slurm_client': ['conf/*.config']
     },
 
     install_requires=[
         'pyyaml',
-        'click'
+        'click',
+        'nwpc-hpc-model'
     ],
 
     # extras_require={

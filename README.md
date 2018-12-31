@@ -10,13 +10,13 @@ A cli client for Slurm in NWPC.
 ## Installing
 
 Install `nwpc-hpc-model` package. You can download this package from Github or
-use the shadow version in `nwpc-operation-system-tool`'s vendor directory.
+use the shadow version in `nwpc-nost`'s vendor directory.
 
-Install `slurm-client` package using `python setup.py install`.
+Install `slurm-client` package using `pip install .`.
 
 ## Getting started
 
-Query slurm jobs:
+Query Slurm jobs:
 
 ```bash
 slurm_client query
@@ -26,18 +26,19 @@ All jobs running or waiting in Slurm will be shown:
 
 ```
 $slclient query
-1133068 RUNNING operation nwp_pd 08/30 01:32 /g2/nwp_pd/ECFLOWOUT/3km_post/06/3km_togrib2/grib2WORK/004/data2grib2_004.job1
-1133069 RUNNING operation nwp_pd 08/30 01:32 /g2/nwp_pd/ECFLOWOUT/3km_post/06/3km_togrib2/grib2WORK/005/data2grib2_005.job1
-1133070 RUNNING operation nwp_pd 08/30 01:32 /g2/nwp_pd/ECFLOWOUT/3km_post/06/3km_togrib2/grib2WORK/006/data2grib2_006.job1
-1133064 RUNNING operation nwp_pd 08/30 01:32 /g2/nwp_pd/ECFLOWOUT/3km_post/06/3km_togrib2/grib2WORK/000/data2grib2_000.job1
-1133065 RUNNING operation nwp_pd 08/30 01:32 /g2/nwp_pd/ECFLOWOUT/3km_post/06/3km_togrib2/grib2WORK/001/data2grib2_001.job1
-1133066 RUNNING operation nwp_pd 08/30 01:32 /g2/nwp_pd/ECFLOWOUT/3km_post/06/3km_togrib2/grib2WORK/002/data2grib2_002.job1
+5539723 RUNNING normal    cra_op   12/30 08:21 /g2/cra_op/stream_plot/JOB
+5539975 RUNNING serial    das_xp   12/30 09:17 /g3/das_xp/zhanglin/exp3/GRAPES_GFS2.3-20181229/RUN/run.cmd
+5571157 RUNNING serial    zhanghua 12/31 04:54 /g3/zhanghua/exph/GRAPES_GFS_2-1-2-2/RUN/run.cmd
+5572669 RUNNING serial    wangrch  12/31 05:09 /g3/wangrch/gen_be/NMC/fcst/p_run_warm_NCEP_00.sh
 ```
 
+Use `slclient query --help` to see options.
+
+Use `slclient --help` to see more sub-commands.
 
 ## Config
 
-`slurm-client` use a YAML file to set catogries which are extract from Slurm `squeue` command. Such as
+`slurm-client` use a YAML file to set categories which are extracted from Slurm `squeue` command. Such as
 
 ```yaml
 squeue:
@@ -69,3 +70,11 @@ Default config file is installed. To use a different config, use `--config-file`
 ```bash
 slurm_client query --config-file=some/config/path
 ```
+
+## LICENSE
+
+Copyright &copy; 2018-2019, Perilla Roc.
+
+`slurm-client` is licensed under [GPL-3.0](#).
+
+[GPL-3.0]: http://www.gnu.org/licenses/gpl-3.0.en.html

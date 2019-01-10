@@ -9,6 +9,6 @@ def get_user_name() -> str:
     if 'USER' in os.environ:
         return os.environ["USER"]
     else:
-        cmquota_command = "whoami"
-        pipe = subprocess.Popen([cmquota_command], stdout=subprocess.PIPE, shell=True)
+        command = "whoami"
+        pipe = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
         return pipe.communicate()[0].decode().rstrip()

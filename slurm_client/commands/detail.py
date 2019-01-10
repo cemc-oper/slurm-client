@@ -33,7 +33,7 @@ def command(config_file, user_list, partition_list, sort_keys, params):
         model_dict = get_squeue_query_response(config, params)
     else:
         from slurm_client.common.api.job import get_query_response
-        model_dict = get_query_response(config, params)
+        model_dict = get_query_response(config)
 
     items = model_dict['items']
     sort_query_response_items(items, sort_keys)

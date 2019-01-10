@@ -14,7 +14,7 @@ def build_query_model(job_dict, category_list):
     return model
 
 
-def get_query_model(config, params=""):
+def get_query_model(config, params="", jobs=None):
     """
     get response of job query using pyslurm.
 
@@ -36,12 +36,21 @@ def get_query_model(config, params=""):
                     }
                 ]
     :param params:
+    :param jobs:
     :return: model, see nwpc_hpc_model.workflow.query_model.QueryModel
 
     """
     import pyslurm
-    jobs = pyslurm.job()
-    job_dict = jobs.get()
+    job_object = pyslurm.job()
+    job_dict = job_object.get()
+
+    if jobs is not None:
+        new_job_dict = dict()
+        for job_id in jobs:
+            job_id = int(job_id)
+            if job_id in job_dict:
+                new_job_dict[job_id] = job_dict[job_id]
+        job_dict = new_job_dict
 
     category_list = build_category_list(config['squeue_pyslurm']['category_list'])
 
@@ -49,16 +58,17 @@ def get_query_model(config, params=""):
     return model
 
 
-def get_query_response(config, params=''):
+def get_query_response(config, params='', jobs=None):
     """
     get response of job query.
 
     :param config: config dict
     :param params:
+    :param jobs: list of job ids
     :return: model dict, see nwpc_hpc_model.workflow.query_model.QueryModel.to_dict()
         {
             items: job info items, see nwpc_hpc_model.workflow.query_item.QueryItem.to_dict()
         }
 
     """
-    return get_query_model(config, params).to_dict()
+    return get_query_model(config, params=params, jobs=jobs).to_dict()

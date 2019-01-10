@@ -1,7 +1,7 @@
 # coding=utf-8
 import click
 
-from slurm_client.commands import query, detail, slq, category, info, acct, filter as slclient_filter
+from slurm_client.commands import query, detail, slq, category, info, acct, filter as slclient_filter, vi
 
 
 @click.group()
@@ -19,6 +19,9 @@ cli.add_command(info.command)
 cli.add_command(category.command)
 cli.add_command(acct.command)
 cli.add_command(slclient_filter.command)
+cli.add_command(vi.edit_job)
+cli.add_command(vi.edit_std_out)
+cli.add_command(vi.edit_std_err)
 
 
 if __name__ == "__main__":

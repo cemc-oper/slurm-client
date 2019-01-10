@@ -2,8 +2,8 @@
 import click
 
 from slurm_client.common.config import get_config
-from slurm_client.common.model_util import get_property_data
-from slurm_client.common.squeue import sort_query_response_items, get_squeue_query_response
+from slurm_client.common.model.model_util import get_property_data
+from slurm_client.common.cli.squeue import sort_query_response_items, get_squeue_query_response
 
 
 @click.command('filter', short_help='job filter')

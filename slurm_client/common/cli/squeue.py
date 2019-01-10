@@ -1,7 +1,7 @@
 # coding: utf-8
 import subprocess
 
-from .model_util import build_category_list, sort_items
+from slurm_client.common.model.model_util import build_category_list, sort_items
 from nwpc_hpc_model.workload.slurm import SlurmQueryModel
 
 

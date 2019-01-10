@@ -3,7 +3,7 @@
 from nwpc_hpc_model.base.query_item import get_property_data
 from nwpc_hpc_model.workload.slurm import SlurmQueryCategoryList
 from nwpc_hpc_model.workload import QueryCategory
-from . import record_parser, value_saver
+from slurm_client.common.model import record_parser, value_saver
 
 
 # TODO: move to nwpc hpc model, and do it in a more proper way.

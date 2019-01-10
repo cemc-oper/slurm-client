@@ -1,5 +1,5 @@
 # coding: utf-8
-from .model_util import build_category_list, sort_items
+from slurm_client.common.model.model_util import build_category_list
 from nwpc_hpc_model.workload.slurm import SlurmQueryModel
 from nwpc_hpc_model.base.query_item import QueryItem
 

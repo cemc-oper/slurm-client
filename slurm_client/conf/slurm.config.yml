@@ -218,5 +218,90 @@ sacct:
       value_saver_class: StringSaver
       value_saver_arguments: []
 
+squeue_pyslurm:
+  category_list:
+    -
+      id: "squeue.job_id"
+      display_name: "Job Id"
+      label: "JOBID"
+      record_parser_class: "DictRecordParser"
+      record_parser_arguments:
+        - "job_id"
+      value_saver_class: "StringSaver"
+      value_saver_arguments: []
+    -
+      id: "squeue.account"
+      display_name: "Account"
+      label: "ACCOUNT"
+      record_parser_class: "DictRecordParser"
+      record_parser_arguments:
+        - "account"
+      value_saver_class: "StringSaver"
+      value_saver_arguments: []
+    -
+      id: "squeue.partition"
+      display_name: "Partition"
+      label: "PARTITION"
+      record_parser_class: "DictRecordParser"
+      record_parser_arguments:
+        - "partition"
+      value_saver_class: "StringSaver"
+      value_saver_arguments: []
+    -
+      id: "squeue.command"
+      display_name: "Command"
+      label: "COMMAND"
+      record_parser_class: "DictRecordParser"
+      record_parser_arguments:
+        - "command"
+      value_saver_class: "StringSaver"
+      value_saver_arguments: []
+    -
+      id: "squeue.state"
+      display_name: "State"
+      label: "STATE"
+      record_parser_class: "DictRecordParser"
+      record_parser_arguments:
+        - "job_state"
+      value_saver_class: "StringSaver"
+      value_saver_arguments: []
+    -
+      id: "squeue.submit_time"
+      display_name: "Submit Time"
+      label: "SUBMIT_TIME"
+      record_parser_class: "DictRecordParser"
+      record_parser_arguments:
+        - "submit_time"
+      value_saver_class: "TimestampSaver"
+      value_saver_arguments: []
+    -
+      id: "squeue.work_dir"
+      display_name: "Work Dir"
+      label: "WORK_DIR"
+      record_parser_class: "DictRecordParser"
+      record_parser_arguments:
+        - "work_dir"
+      value_saver_class: "StringSaver"
+      value_saver_arguments: []
+    -
+      id: "squeue.std_out"
+      display_name: "Std Out"
+      label: "STD_OUT"
+      record_parser_class: "DictRecordParser"
+      record_parser_arguments:
+        - "std_out"
+      value_saver_class: "StringSaver"
+      value_saver_arguments: []
+    -
+      id: "squeue.std_err"
+      display_name: "Std Err"
+      label: "STD_ERR"
+      record_parser_class: "DictRecordParser"
+      record_parser_arguments:
+        - "std_err"
+      value_saver_class: "StringSaver"
+      value_saver_arguments: []
+
+
 
 

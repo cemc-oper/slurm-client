@@ -3,7 +3,7 @@ import click
 
 from slurm_client.common.config import get_config
 from slurm_client.common.model_util import get_property_data
-from slurm_client.common.squeue import sort_query_response_items, get_squeue_query_response
+from slurm_client.common.squeue import sort_query_response_items
 
 
 @click.command('detail', short_help='squeue detail format')
@@ -27,7 +27,14 @@ def command(config_file, user_list, partition_list, sort_keys, params):
     if sort_keys:
         sort_keys = tuple(sort_keys.split(":"))
 
-    model_dict = get_squeue_query_response(config, params)
+    from slurm_client import HAS_PYSLURM
+    if not HAS_PYSLURM:
+        from slurm_client.common.squeue import get_squeue_query_response
+        model_dict = get_squeue_query_response(config, params)
+    else:
+        from slurm_client.common.api_job import get_query_response
+        model_dict = get_query_response(config, params)
+
     items = model_dict['items']
     sort_query_response_items(items, sort_keys)
 
@@ -39,12 +46,20 @@ def command(config_file, user_list, partition_list, sort_keys, params):
         job_state = get_property_data(an_item, "squeue.state")
         job_submit_time = get_property_data(an_item, "squeue.submit_time")
         click.echo("""{job_id} {job_state} {job_partition} {job_account} {job_submit_time}
-  Command: {job_command}
-""".format(
-            job_id=click.style(job_id, bold=True),
+Command: {job_command}""".format(
+            job_id=click.style(str(job_id), bold=True),
             job_partition=click.style(job_partition, fg='blue'),
             job_account=click.style(job_account, fg='cyan'),
             job_submit_time=click.style(job_submit_time.strftime("%m/%d %H:%M"), fg='blue'),
             job_command=job_command,
             job_state=click.style(job_state, fg='yellow')
         ))
+        if HAS_PYSLURM:
+            std_out = get_property_data(an_item, "squeue.std_out")
+            std_err = get_property_data(an_item, "squeue.std_err")
+            click.echo("""    Out: {std_out}
+    Err: {std_err}""".format(
+                std_out=std_out,
+                std_err=std_err
+            ))
+        click.echo("")

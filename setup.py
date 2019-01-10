@@ -48,9 +48,12 @@ setup(
         'nwpc-hpc-model'
     ],
 
-    # extras_require={
-    #     'test': ['pytest'],
-    # },
+    extras_require={
+        'pyslurm': [
+            'cython',
+            'pyslurm'
+        ],
+    },
 
     entry_points={
         'console_scripts': [

@@ -4,8 +4,8 @@ A cli client for Slurm in NWPC.
 
 ## Features
 
-  - Query active jobs.
-  - Show partition information.
+-   Query active jobs.
+-   Show partition information.
 
 ## Installing
 
@@ -24,13 +24,11 @@ slurm_client query
 
 All jobs running or waiting in Slurm will be shown:
 
-```
-$slclient query
-5539723 RUNNING normal    cra_op   12/30 08:21 /g2/cra_op/stream_plot/JOB
-5539975 RUNNING serial    das_xp   12/30 09:17 /g3/das_xp/zhanglin/exp3/GRAPES_GFS2.3-20181229/RUN/run.cmd
-5571157 RUNNING serial    zhanghua 12/31 04:54 /g3/zhanghua/exph/GRAPES_GFS_2-1-2-2/RUN/run.cmd
-5572669 RUNNING serial    wangrch  12/31 05:09 /g3/wangrch/gen_be/NMC/fcst/p_run_warm_NCEP_00.sh
-```
+    $slclient query
+    5539723 RUNNING normal    cra_op   12/30 08:21 /g2/cra_op/stream_plot/JOB
+    5539975 RUNNING serial    das_xp   12/30 09:17 /g3/das_xp/zhanglin/exp3/GRAPES_GFS2.3-20181229/RUN/run.cmd
+    5571157 RUNNING serial    zhanghua 12/31 04:54 /g3/zhanghua/exph/GRAPES_GFS_2-1-2-2/RUN/run.cmd
+    5572669 RUNNING serial    wangrch  12/31 05:09 /g3/wangrch/gen_be/NMC/fcst/p_run_warm_NCEP_00.sh
 
 Use `slclient query --help` to see options.
 
@@ -73,8 +71,6 @@ slurm_client query --config-file=some/config/path
 
 ## LICENSE
 
-Copyright &copy; 2018-2019, Perilla Roc.
+Copyright © 2018-2019, Perilla Roc.
 
-`slurm-client` is licensed under [GPL-3.0](#).
-
-[GPL-3.0]: http://www.gnu.org/licenses/gpl-3.0.en.html
+`slurm-client` is licensed under [GPL-3.0](http://www.gnu.org/licenses/gpl-3.0.en.html).

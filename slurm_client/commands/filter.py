@@ -3,7 +3,7 @@ import click
 
 from slurm_client.common.config import get_config
 from slurm_client.common.model.model_util import get_property_data
-from slurm_client.common.cli.squeue import sort_query_response_items, get_squeue_query_response
+from slurm_client.common.cli.squeue import sort_query_items, get_query_response
 
 
 @click.command('filter', short_help='job filter')
@@ -16,7 +16,7 @@ def command(config_file):
     """
     config = get_config(config_file)
 
-    model_dict = get_squeue_query_response(config)
+    model_dict = get_query_response(config)
 
     from slurm_client.plugins.filters import long_time_job_filter
 
@@ -54,7 +54,7 @@ def command(config_file):
             if len(job_account) > max_owner_length:
                 max_owner_length = len(job_account)
 
-        sort_query_response_items(filter_items)
+        sort_query_items(filter_items)
 
         for an_item in filter_items:
             job_id = get_property_data(an_item, "squeue.job_id")

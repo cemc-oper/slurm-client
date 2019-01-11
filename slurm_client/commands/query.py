@@ -3,7 +3,7 @@ import click
 
 from slurm_client.common.config import get_config
 from slurm_client.common.model.model_util import get_property_data
-from slurm_client.common.cli.squeue import sort_query_response_items, get_squeue_query_response
+from slurm_client.common.cli.squeue import sort_query_items, get_query_response
 
 
 @click.command('query', short_help='squeue short format')
@@ -28,7 +28,7 @@ def command(config_file, user_list, partition_list, sort_keys, params, command_p
     if sort_keys:
         sort_keys = tuple(sort_keys.split(":"))
 
-    model_dict = get_squeue_query_response(config, params)
+    model_dict = get_query_response(config, params)
 
     max_class_length = 0
     max_owner_length = 0
@@ -48,7 +48,7 @@ def command(config_file, user_list, partition_list, sort_keys, params, command_p
         a_filter = a_filter_object['filter']
         items = a_filter.filter(items)
 
-    sort_query_response_items(items, sort_keys)
+    sort_query_items(items, sort_keys)
 
     for an_item in items:
         job_id = get_property_data(an_item, "squeue.job_id")

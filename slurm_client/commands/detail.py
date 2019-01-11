@@ -3,7 +3,7 @@ import click
 
 from slurm_client.common.config import get_config
 from slurm_client.common.model.model_util import get_property_data
-from slurm_client.common.cli.squeue import sort_query_response_items
+from slurm_client.common.cli.squeue import sort_query_items
 
 
 @click.command('detail', short_help='squeue detail format')
@@ -29,14 +29,14 @@ def command(config_file, user_list, partition_list, sort_keys, params):
 
     from slurm_client import HAS_PYSLURM
     if not HAS_PYSLURM:
-        from slurm_client.common.cli.squeue import get_squeue_query_response
-        model_dict = get_squeue_query_response(config, params)
+        from slurm_client.common.cli.squeue import get_query_response
+        model_dict = get_query_response(config, params)
     else:
         from slurm_client.common.api.job import get_query_response
         model_dict = get_query_response(config)
 
     items = model_dict['items']
-    sort_query_response_items(items, sort_keys)
+    sort_query_items(items, sort_keys)
 
     for an_item in items:
         job_id = get_property_data(an_item, "squeue.job_id")

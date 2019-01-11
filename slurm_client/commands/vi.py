@@ -19,8 +19,8 @@ def edit_file(config, file_type, job_id):
             click.echo('Please install pyslurm to enable this feature.')
             return
         params = job_id
-        from slurm_client.common.cli.squeue import get_squeue_query_response
-        model_dict = get_squeue_query_response(config, params)
+        from slurm_client.common.cli.squeue import get_query_response
+        model_dict = get_query_response(config, params)
     else:
         from slurm_client.common.api.job import get_query_response
         model_dict = get_query_response(config, jobs=[job_id])

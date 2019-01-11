@@ -5,14 +5,14 @@ from slurm_client.common.model.model_util import build_category_list, sort_items
 from nwpc_hpc_model.workload.slurm import SlurmQueryModel
 
 
-def sort_query_response_items(items, sort_keys=None):
+def sort_query_items(items, sort_keys=None):
     if sort_keys is None:
         sort_keys = ('state', 'submit_time')
     sort_keys = ['squeue.'+i for i in sort_keys]
     sort_items(items, sort_keys)
 
 
-def run_squeue_command(command="squeue -o %all", params="") -> str:
+def run_command(command="squeue -o %all", params="") -> str:
     """
     :param command:
     :param params:
@@ -24,7 +24,7 @@ def run_squeue_command(command="squeue -o %all", params="") -> str:
     return output_string
 
 
-def get_squeue_query_model(config, params=""):
+def get_query_model(config, params=""):
     """
     get response of squeue query.
 
@@ -46,14 +46,14 @@ def get_squeue_query_model(config, params=""):
     :return: model, see nwpc_hpc_model.workflow.query_model.QueryModel
 
     """
-    output_lines = run_squeue_command(params=params).split("\n")
+    output_lines = run_command(params=params).split("\n")
     category_list = build_category_list(config['squeue']['category_list'])
 
     model = SlurmQueryModel.build_from_table_category_list(output_lines, category_list, '|')
     return model
 
 
-def get_squeue_query_response(config, params=""):
+def get_query_response(config, params=""):
     """
     get response of llq detail query.
 
@@ -78,4 +78,4 @@ def get_squeue_query_response(config, params=""):
         }
 
     """
-    return get_squeue_query_model(config, params).to_dict()
+    return get_query_model(config, params).to_dict()

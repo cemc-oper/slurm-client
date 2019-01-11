@@ -4,11 +4,11 @@ import click
 from slurm_client.common import get_user_name
 from slurm_client.common.config import get_config
 from slurm_client.common.model.model_util import get_property_data
-from slurm_client.common.cli.squeue import sort_query_response_items, get_squeue_query_response
+from slurm_client.common.cli.squeue import sort_query_items, get_query_response
 
 
 def query_user_slq(config, user_name, sort_keys, long=False):
-    model_dict = get_squeue_query_response(config)
+    model_dict = get_query_response(config)
 
     max_class_length = 0
     max_owner_length = 0
@@ -23,7 +23,7 @@ def query_user_slq(config, user_name, sort_keys, long=False):
             max_owner_length = len(job_account)
 
     items = model_dict['items']
-    sort_query_response_items(items, sort_keys)
+    sort_query_items(items, sort_keys)
 
     for an_item in items:
         job_id = get_property_data(an_item, "squeue.job_id")

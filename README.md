@@ -4,8 +4,8 @@ A cli client for Slurm in NWPC.
 
 ## Features
 
-- Query active jobs.
-- Show partition information.
+  - Query active jobs.
+  - Show partition information.
 
 ## Installing
 

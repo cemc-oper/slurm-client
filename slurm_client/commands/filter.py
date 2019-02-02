@@ -6,19 +6,22 @@ from slurm_client.common.model.model_util import get_property_data
 from slurm_client.common.cli.squeue import sort_query_items, get_query_response
 
 
-@click.command('filter', short_help='job filter')
+@click.group('filter', short_help='job filter')
+def command():
+    """
+    Filter slurm jobs.
+    """
+    pass
+
+
+@command.command('all', short_help='job filter')
 @click.option('--config-file', help="config file path")
-# @click.option('-f', '--filter', 'filter_name', help="filter name")
-# @click.option('-d', '--detail', is_flag=True, default=False, help="show detail information")
-def command(config_file):
-    """
-    Filter slurm jobs using build-in filters.
-    """
+def all_filters(config_file):
     config = get_config(config_file)
 
     model_dict = get_query_response(config)
 
-    from slurm_client.plugins.filters import long_time_job_filter
+    from slurm_client.filters import long_time_job_filter
 
     filter_module_list = [
         long_time_job_filter

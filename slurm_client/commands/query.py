@@ -43,7 +43,7 @@ def command(config_file, user_list, partition_list, sort_keys, params, command_p
     items = model_dict['items']
 
     if command_pattern:
-        from slurm_client.plugins.filters import command_filter
+        from slurm_client.filters import command_filter
         a_filter_object = command_filter.create_filter(command_pattern)
         a_filter = a_filter_object['filter']
         items = a_filter.filter(items)

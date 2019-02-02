@@ -6,7 +6,10 @@ from nwpc_hpc_model.workload.filter_condition import create_value_in_checker
 from slurm_client.common.filter import Filter as SlurmFilter
 
 
-class CommandFilter(SlurmFilter):
+class JobCommandFilter(SlurmFilter):
+    """
+    Filter job command
+    """
     def __init__(self, pattern):
         SlurmFilter.__init__(self, "command_filter")
         self.pattern = pattern

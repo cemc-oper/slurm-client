@@ -1,7 +1,11 @@
 # coding: utf-8
+import sys
+import importlib
+from pathlib import Path
 import click
 
 from slurm_client.common.config import get_config
+from slurm_client.common.filter import Filter as SlurmFilter
 from slurm_client.common.model.model_util import get_property_data
 from slurm_client.common.cli.squeue import sort_query_items, get_query_response
 
@@ -21,31 +25,16 @@ def all_filters(config_file):
 
     model_dict = get_query_response(config)
 
-    from slurm_client.filters import long_time_job_filter
+    filters_path = Path(Path(__file__).parent.parent, "filters")
+    filters = load_filters([filters_path])
+    for filter_name in filters:
+        filter_class = filters[filter_name]
+        if not filter_class.USE_IN_DEFAULT:
+            continue
+        filter_object = filter_class()
+        filter_items = filter_object.apply(model_dict['items'])
 
-    filter_module_list = [
-        long_time_job_filter
-    ]
-
-    def apply_filters(job_items):
-        results = []
-        for a_filter_module in filter_module_list:
-            a_filter_object = a_filter_module.create_filter()
-            cur_filter_name = a_filter_object['name']
-            a_filter = a_filter_object['filter']
-            target_job_items = a_filter.filter(job_items)
-            results.append({
-                'name': cur_filter_name,
-                'target_job_items': target_job_items
-            })
-        return results
-
-    filter_results = apply_filters(model_dict['items'])
-
-    for a_filter_result in filter_results:
-        click.echo('{filter_name}:'.format(filter_name=click.style(a_filter_result['name'], bold=True)))
-
-        filter_items = a_filter_result['target_job_items']
+        click.echo('{filter_name}:'.format(filter_name=click.style(filter_object.name, bold=True)))
 
         max_class_length = 0
         max_owner_length = 0
@@ -77,3 +66,64 @@ def all_filters(config_file):
                 job_state=click.style("{job_state: <2}".format(job_state=job_state), fg='yellow'),
             ))
         click.echo()
+
+
+@command.command('list', short_help='job filter')
+@click.option('--config-file', help="config file path")
+def list_filters(config_file):
+    filters_path = Path(Path(__file__).parent.parent, "filters")
+    filters = load_filters([filters_path])
+    for filter_name in filters:
+        print(filter_name)
+
+
+def load_include_paths(paths):
+    for path in paths:
+        if not isinstance(path, Path):
+            path = Path(path)
+        if not path.is_dir():
+            continue
+        if path not in sys.path:
+            sys.path.insert(1, str(path))
+        for child in path.iterdir():
+            child_path = Path(path, child)
+            if child_path.is_dir():
+                load_include_paths([child_path])
+
+
+def load_filters(paths):
+    filters = {}
+    if paths is None:
+        return
+
+    load_include_paths(paths)
+
+    for path in paths:
+        if not isinstance(path, Path):
+            path = Path(path)
+
+        if not path.exists():
+            raise OSError("directory does not exist: {path}".format(path=path))
+
+        if path.name.endswith('tests'):
+            continue
+
+        for child in path.iterdir():
+            if child.is_dir():
+                sub_filters = load_filters([child])
+                for item in sub_filters:
+                    filters[item] = sub_filters[item]
+            elif (child.is_file() and child.name[-3:] == ".py" and
+                  child.name[0:4] != "test" and child.name[0] != '.'):
+                file_name = child.stem
+                module = importlib.import_module(file_name)
+                for attr_name in dir(module):
+                    attr = getattr(module, attr_name)
+                    try:
+                        if issubclass(attr, SlurmFilter):
+                            # print(attr)
+                            if attr != SlurmFilter:
+                                filters[attr.__name__] = attr
+                    except TypeError:
+                        pass
+    return filters

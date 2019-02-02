@@ -43,10 +43,9 @@ def command(config_file, user_list, partition_list, sort_keys, params, command_p
     items = model_dict['items']
 
     if command_pattern:
-        from slurm_client.filters import command_filter
-        a_filter_object = command_filter.create_filter(command_pattern)
-        a_filter = a_filter_object['filter']
-        items = a_filter.filter(items)
+        from slurm_client.filters.command import command_filter
+        filter_object = command_filter.CommandFilter(command_pattern)
+        items = filter_object.apply(items)
 
     sort_query_items(items, sort_keys)
 

@@ -73,6 +73,6 @@ slurm_client query --config-file=some/config/path
 
 ## LICENSE
 
-Copyright © 2018-2019, Perilla Roc.
+Copyright &copy; 2018-2019, Perilla Roc.
 
 `slurm-client` is licensed under [GPL-3.0](http://www.gnu.org/licenses/gpl-3.0.en.html).
